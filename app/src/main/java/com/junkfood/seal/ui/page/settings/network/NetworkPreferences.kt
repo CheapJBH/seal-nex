@@ -178,7 +178,7 @@ fun NetworkPreferences(navigateToCookieProfilePage: () -> Unit = {}, onNavigateB
                     PreferenceItem(
                         title = stringResource(R.string.cookie_browser),
                         description = stringResource(R.string.cookie_browser_desc),
-                        icon = Icons.Outlined.Add,
+                        icon = Icons.Default.Add,
                         onClick = { showCookieBrowser = true },
                     )
                 }

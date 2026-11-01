@@ -47,6 +47,7 @@ import com.junkfood.seal.util.COOKIES
 import com.junkfood.seal.util.DatabaseUtil
 import com.junkfood.seal.util.DownloadUtil
 import com.junkfood.seal.util.FileUtil
+import com.junkfood.seal.util.FileUtil.getCookiesFile
 import com.junkfood.seal.util.PreferenceUtil.updateBoolean
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -161,13 +162,9 @@ fun CookieBrowserPage(
                         modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
                         label = { Text(stringResource(R.string.video_url)) },
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
-                        onImeAction = {
-                            loadWebUrl(url)
-                        },
+                        onImeAction = { loadWebUrl(url) },
                     )
-                    IconButton(onClick = {
-                        loadWebUrl(url)
-                    }) {
+                    IconButton(onClick = { loadWebUrl(url) }) {
                         Icon(
                             imageVector = Icons.Filled.Add,
                             contentDescription = null,
@@ -208,9 +205,7 @@ fun CookieBrowserPage(
             }
             // 右侧：按钮
             Button(
-                onClick = {
-                    showExportDialog = true
-                },
+                onClick = { showExportDialog = true },
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Cookie,
@@ -243,7 +238,7 @@ fun CookieBrowserPage(
                             // 写入 cookies 文件
                             FileUtil.writeContentToFile(cookiesContent, context.getCookiesFile())
                             // 启用 cookies 选项
-                            updateBoolean(COOKIES, true)
+                            COOKIES.updateBoolean(true)
                             // 保存为 CookieProfile
                             val profile = CookieProfile(
                                 id = 0,
