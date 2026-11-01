@@ -2,16 +2,6 @@ package com.junkfood.seal.ui.page.settings.network
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Bolt
-import androidx.compose.material.icons.outlined.Cookie
-import androidx.compose.material.icons.outlined.OfflineBolt
-import androidx.compose.material.icons.outlined.SettingsEthernet
-import androidx.compose.material.icons.outlined.SignalCellular4Bar
-import androidx.compose.material.icons.outlined.SignalCellularConnectedNoInternet4Bar
-import androidx.compose.material.icons.outlined.Speed
-import androidx.compose.material.icons.outlined.VpnKey
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.Scaffold
@@ -89,7 +79,6 @@ fun NetworkPreferences(navigateToCookieProfilePage: () -> Unit = {}, onNavigateB
                     PreferenceSwitchWithDivider(
                         title = stringResource(R.string.rate_limit),
                         description = stringResource(R.string.rate_limit_desc),
-                        icon = Icons.Outlined.Speed,
                         enabled = !isCustomCommandEnabled,
                         isChecked = isRateLimitEnabled,
                         onChecked = {
@@ -106,9 +95,6 @@ fun NetworkPreferences(navigateToCookieProfilePage: () -> Unit = {}, onNavigateB
                     PreferenceSwitch(
                         title = stringResource(R.string.download_with_cellular),
                         description = stringResource(R.string.download_with_cellular_desc),
-                        icon =
-                            if (isDownloadWithCellularEnabled) Icons.Outlined.SignalCellular4Bar
-                            else Icons.Outlined.SignalCellularConnectedNoInternet4Bar,
                         isChecked = isDownloadWithCellularEnabled,
                         onClick = {
                             isDownloadWithCellularEnabled = !isDownloadWithCellularEnabled
@@ -122,7 +108,6 @@ fun NetworkPreferences(navigateToCookieProfilePage: () -> Unit = {}, onNavigateB
                 item {
                     PreferenceSwitch(
                         title = stringResource(R.string.aria2),
-                        icon = Icons.Outlined.Bolt,
                         description = stringResource(R.string.aria2_desc),
                         isChecked = aria2c,
                         onClick = {
@@ -135,7 +120,6 @@ fun NetworkPreferences(navigateToCookieProfilePage: () -> Unit = {}, onNavigateB
                     PreferenceSwitchWithDivider(
                         title = stringResource(id = R.string.proxy),
                         description = stringResource(id = R.string.proxy_desc),
-                        icon = Icons.Outlined.VpnKey,
                         isChecked = proxy,
                         onChecked = {
                             proxy = !proxy
@@ -149,7 +133,6 @@ fun NetworkPreferences(navigateToCookieProfilePage: () -> Unit = {}, onNavigateB
                     PreferenceItem(
                         title = stringResource(id = R.string.concurrent_download),
                         description = stringResource(R.string.concurrent_download_desc),
-                        icon = Icons.Outlined.OfflineBolt,
                         enabled = !aria2c && !isCustomCommandEnabled,
                     ) {
                         showConcurrentDownloadDialog = true
@@ -159,7 +142,6 @@ fun NetworkPreferences(navigateToCookieProfilePage: () -> Unit = {}, onNavigateB
                     PreferenceSwitch(
                         title = stringResource(R.string.force_ipv4),
                         description = stringResource(id = R.string.force_ipv4_desc),
-                        icon = Icons.Outlined.SettingsEthernet,
                         enabled = !isCustomCommandEnabled,
                         isChecked = forceIpv4,
                     ) {
@@ -171,7 +153,6 @@ fun NetworkPreferences(navigateToCookieProfilePage: () -> Unit = {}, onNavigateB
                     PreferenceItem(
                         title = stringResource(R.string.cookies),
                         description = stringResource(R.string.cookies_desc),
-                        icon = Icons.Outlined.Cookie,
                         onClick = { navigateToCookieProfilePage() },
                     )
                 }

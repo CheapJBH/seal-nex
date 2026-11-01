@@ -12,14 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.outlined.ArrowBack as ArrowBackIc
-import androidx.compose.material.icons.outlined.ArrowForward as ArrowForwardIc
-import androidx.compose.material.icons.outlined.Refresh as RefreshIc
-import androidx.compose.material.icons.filled.Add as AddIc
-import androidx.compose.material.icons.outlined.Cookie as CookieIc
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -33,7 +27,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -96,24 +89,13 @@ fun CookieBrowserPage(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     IconButton(onClick = { nativeWebView?.goBack() }) {
-                        Icon(
-                            painter = rememberVectorPainter(ArrowBackIc),
-                            contentDescription = null,
-                            enabled = nativeWebView?.canGoBack() ?: false,
-                        )
+                        Text("←", style = MaterialTheme.typography.bodyLarge)
                     }
                     IconButton(onClick = { nativeWebView?.goForward() }) {
-                        Icon(
-                            painter = rememberVectorPainter(ArrowForwardIc),
-                            contentDescription = null,
-                            enabled = nativeWebView?.canGoForward() ?: false,
-                        )
+                        Text("→", style = MaterialTheme.typography.bodyLarge)
                     }
                     IconButton(onClick = { nativeWebView?.reload() }) {
-                        Icon(
-                            painter = rememberVectorPainter(RefreshIc),
-                            contentDescription = null,
-                        )
+                        Text("↻", style = MaterialTheme.typography.bodyLarge)
                     }
                     OutlinedTextField(
                         value = url,
@@ -122,10 +104,7 @@ fun CookieBrowserPage(
                         label = { Text(stringResource(R.string.video_url)) },
                     )
                     IconButton(onClick = { loadWebUrl(url) }) {
-                        Icon(
-                            painter = rememberVectorPainter(AddIc),
-                            contentDescription = null,
-                        )
+                        Text("前往", style = MaterialTheme.typography.bodyMedium)
                     }
                 }
             }
@@ -166,11 +145,7 @@ fun CookieBrowserPage(
             Button(
                 onClick = { showExportDialog = true },
             ) {
-                Icon(
-                    painter = rememberVectorPainter(CookieIc),
-                    contentDescription = null,
-                )
-                Text(text = stringResource(R.string.export_cookies))
+                Text(stringResource(R.string.export_cookies))
             }
         }
     }
@@ -180,12 +155,6 @@ fun CookieBrowserPage(
         SealDialog(
             onDismissRequest = { showExportDialog = false },
             title = { Text(stringResource(R.string.export_cookies)) },
-            icon = {
-                Icon(
-                    painter = rememberVectorPainter(CookieIc),
-                    contentDescription = null,
-                )
-            },
             dismissButton = {
                 androidx.compose.material3.OutlinedButton(onClick = { showExportDialog = false }) {
                     Text(text = stringResource(androidx.appcompat.R.string.abc_action_mode_done))
