@@ -1,11 +1,9 @@
 package com.junkfood.seal.ui.page.settings.network
 
 import com.google.accompanist.web.AccompanistWebChromeClient
-import com.google.accompanist.web.AccompanistWebViewClient
 import com.google.accompanist.web.WebView
 import com.google.accompanist.web.rememberWebViewState
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -64,37 +62,10 @@ fun CookieBrowserPage(
     val scope = rememberCoroutineScope()
 
     var url by remember { mutableStateOf("") }
-    var canGoBack by remember { mutableStateOf(false) }
-    var canGoForward by remember { mutableStateOf(false) }
-    var isLoading by remember { mutableStateOf(false) }
     var exportStatus by remember { mutableStateOf("") }
     var showExportDialog by remember { mutableStateOf(false) }
 
     val webViewState = rememberWebViewState("https://www.youtube.com/")
-
-    // 页面加载状态监听
-    val webViewClient = remember {
-        object : AccompanistWebViewClient() {
-            override fun onPageFinished(view: WebView, loadedUrl: String?) {
-                super.onPageFinished(view, loadedUrl)
-                isLoading = false
-                canGoBack = webViewState.canGoBack
-                canGoForward = webViewState.canGoForward
-                url = loadedUrl ?: ""
-            }
-
-            override fun onReceivedError(
-                view: WebView,
-                errorCode: Int,
-                description: String?,
-                failingUrl: String?,
-            ) {
-                super.onReceivedError(view, errorCode, description, failingUrl)
-                isLoading = false
-                exportStatus = "加载失败：$description"
-            }
-        }
-    }
 
     fun loadWebUrl(input: String) {
         if (input.isNotEmpty()) {
@@ -108,10 +79,10 @@ fun CookieBrowserPage(
 
     Column(modifier = Modifier.fillMaxSize()) {
         // 顶部导航栏
-        Box(
+        androidx.compose.foundation.layout.Box(
             modifier = Modifier.fillMaxWidth().height(56.dp),
         ) {
-            Column(
+            androidx.compose.foundation.layout.Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
@@ -120,18 +91,18 @@ fun CookieBrowserPage(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    IconButton(onClick = { webViewState.goBack(); canGoBack = webViewState.canGoBack }) {
+                    IconButton(onClick = { webViewState.goBack() }) {
                         Icon(
                             imageVector = Icons.Outlined.ArrowBack,
                             contentDescription = null,
-                            enabled = canGoBack,
+                            enabled = webViewState.canGoBack,
                         )
                     }
-                    IconButton(onClick = { webViewState.goForward(); canGoForward = webViewState.canGoForward }) {
+                    IconButton(onClick = { webViewState.goForward() }) {
                         Icon(
                             imageVector = Icons.Outlined.ArrowForward,
                             contentDescription = null,
-                            enabled = canGoForward,
+                            enabled = webViewState.canGoForward,
                         )
                     }
                     IconButton(onClick = { webViewState.reload() }) {
@@ -159,7 +130,7 @@ fun CookieBrowserPage(
         // WebView 内容区域
         WebView(
             state = webViewState,
-            client = webViewClient,
+            client = com.google.accompanist.web.AccompanistWebViewClient(),
             chromeClient = object : AccompanistWebChromeClient() {},
             modifier = Modifier.fillMaxSize(),
         )
@@ -174,19 +145,11 @@ fun CookieBrowserPage(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             // 左侧：状态文本
-            if (isLoading) {
-                Text(
-                    text = stringResource(R.string.loading),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-            } else if (exportStatus.isNotEmpty()) {
-                Text(
-                    text = exportStatus,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
+            Text(
+                text = exportStatus.ifEmpty { stringResource(R.string.loading) },
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             // 右侧：按钮
             Button(
                 onClick = { showExportDialog = true },
