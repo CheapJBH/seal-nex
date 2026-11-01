@@ -1,6 +1,8 @@
 package com.junkfood.seal.ui.page.settings.network
 
+import android.webkit.WebView as AndroidWebView
 import com.google.accompanist.web.AccompanistWebChromeClient
+import com.google.accompanist.web.AccompanistWebViewClient
 import com.google.accompanist.web.WebView
 import com.google.accompanist.web.rememberWebViewState
 import androidx.compose.foundation.layout.Arrangement
@@ -43,6 +45,7 @@ import com.junkfood.seal.util.COOKIES
 import com.junkfood.seal.util.DatabaseUtil
 import com.junkfood.seal.util.DownloadUtil
 import com.junkfood.seal.util.FileUtil
+import com.junkfood.seal.util.FileUtil.getCookiesFile
 import com.junkfood.seal.util.PreferenceUtil.updateBoolean
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -65,14 +68,15 @@ fun CookieBrowserPage(
     var exportStatus by remember { mutableStateOf("") }
     var showExportDialog by remember { mutableStateOf(false) }
 
+    var nativeWebView by remember { mutableStateOf<AndroidWebView?>(null) }
     val webViewState = rememberWebViewState("https://www.youtube.com/")
 
     fun loadWebUrl(input: String) {
         if (input.isNotEmpty()) {
             if (!input.startsWith("http")) {
-                webViewState.loadUrl("https://$input")
+                nativeWebView?.loadUrl("https://$input")
             } else {
-                webViewState.loadUrl(input)
+                nativeWebView?.loadUrl(input)
             }
         }
     }
@@ -91,21 +95,21 @@ fun CookieBrowserPage(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    IconButton(onClick = { webViewState.goBack() }) {
+                    IconButton(onClick = { nativeWebView?.goBack() }) {
                         Icon(
                             imageVector = Icons.Outlined.ArrowBack,
                             contentDescription = null,
-                            enabled = webViewState.canGoBack,
+                            enabled = nativeWebView?.canGoBack == true,
                         )
                     }
-                    IconButton(onClick = { webViewState.goForward() }) {
+                    IconButton(onClick = { nativeWebView?.goForward() }) {
                         Icon(
                             imageVector = Icons.Outlined.ArrowForward,
                             contentDescription = null,
-                            enabled = webViewState.canGoForward,
+                            enabled = nativeWebView?.canGoForward == true,
                         )
                     }
-                    IconButton(onClick = { webViewState.reload() }) {
+                    IconButton(onClick = { nativeWebView?.reload() }) {
                         Icon(
                             imageVector = Icons.Outlined.Refresh,
                             contentDescription = null,
@@ -130,9 +134,17 @@ fun CookieBrowserPage(
         // WebView 内容区域
         WebView(
             state = webViewState,
-            client = com.google.accompanist.web.AccompanistWebViewClient(),
+            client = AccompanistWebViewClient(),
             chromeClient = object : AccompanistWebChromeClient() {},
             modifier = Modifier.fillMaxSize(),
+            factory = { context ->
+                AndroidWebView(context).apply {
+                    nativeWebView = this
+                    settings.javaScriptEnabled = true
+                    settings.domStorageEnabled = true
+                    settings.databaseEnabled = true
+                }
+            },
         )
 
         // 底部状态栏
@@ -189,11 +201,11 @@ fun CookieBrowserPage(
                             // 保存为 CookieProfile
                             val profile = CookieProfile(
                                 id = 0,
-                                url = webViewState.url?.toString() ?: "https://",
+                                url = nativeWebView?.url ?: "https://",
                                 content = cookiesContent,
                             )
                             DatabaseUtil.insertCookieProfile(profile)
-                            exportStatus = "Cookies 已导出（${webViewState.url}）"
+                            exportStatus = "Cookies 已导出（${nativeWebView?.url}）"
                             showExportDialog = false
                             onCookiesExported()
                         } else {
