@@ -97,21 +97,21 @@ fun CookieBrowserPage(
                 ) {
                     IconButton(onClick = { nativeWebView?.goBack() }) {
                         Icon(
-                            imageVector = Icons.Outlined.ArrowBack,
+                            imageVector = ArrowBack,
                             contentDescription = null,
                             enabled = nativeWebView?.canGoBack() ?: false,
                         )
                     }
                     IconButton(onClick = { nativeWebView?.goForward() }) {
                         Icon(
-                            imageVector = Icons.Outlined.ArrowForward,
+                            imageVector = ArrowForward,
                             contentDescription = null,
                             enabled = nativeWebView?.canGoForward() ?: false,
                         )
                     }
                     IconButton(onClick = { nativeWebView?.reload() }) {
                         Icon(
-                            imageVector = Icons.Outlined.Refresh,
+                            imageVector = Refresh,
                             contentDescription = null,
                         )
                     }
@@ -123,7 +123,7 @@ fun CookieBrowserPage(
                     )
                     IconButton(onClick = { loadWebUrl(url) }) {
                         Icon(
-                            imageVector = Icons.Filled.Add,
+                            imageVector = Add,
                             contentDescription = null,
                         )
                     }
@@ -167,7 +167,7 @@ fun CookieBrowserPage(
                 onClick = { showExportDialog = true },
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Cookie,
+                    imageVector = Cookie,
                     contentDescription = null,
                 )
                 Text(text = stringResource(R.string.export_cookies))
@@ -180,7 +180,7 @@ fun CookieBrowserPage(
         SealDialog(
             onDismissRequest = { showExportDialog = false },
             title = { Text(stringResource(R.string.export_cookies)) },
-            icon = { Icon(Icons.Outlined.Cookie, null) },
+            icon = { Icon(Cookie, null) },
             dismissButton = {
                 androidx.compose.material3.OutlinedButton(onClick = { showExportDialog = false }) {
                     Text(text = stringResource(androidx.appcompat.R.string.abc_action_mode_done))
