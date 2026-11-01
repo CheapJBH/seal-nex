@@ -47,7 +47,9 @@ jobs:
           EOF
 
       - name: Build Release APK with Gradle
-        run: ./gradlew clean assembleRelease --no-build-cache --no-configuration-cache --refresh-dependencies
+        env:
+          GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx1024m -Dorg.gradle.daemon=false"
+        run: ./gradlew clean assembleRelease --no-build-cache --no-configuration-cache --refresh-dependencies --no-daemon
 
       - name: Upload APK to artifact
         uses: actions/upload-artifact@v4
