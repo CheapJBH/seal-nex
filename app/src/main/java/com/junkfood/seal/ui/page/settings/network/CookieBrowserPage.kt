@@ -2,15 +2,14 @@ package com.junkfood.seal.ui.page.settings.network
 
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -22,15 +21,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +44,7 @@ import com.junkfood.seal.database.objects.CookieProfile
 import com.junkfood.seal.ui.component.ConfirmButton
 import com.junkfood.seal.ui.component.SealDialog
 import com.junkfood.seal.util.COOKIES
+import com.junkfood.seal.util.DatabaseUtil
 import com.junkfood.seal.util.DownloadUtil
 import com.junkfood.seal.util.FileUtil
 import com.junkfood.seal.util.PreferenceUtil.updateBoolean
@@ -114,6 +111,16 @@ fun CookieBrowserPage(
         webView.loadUrl("https://www.youtube.com/")
     }
 
+    fun loadWebUrl(input: String) {
+        if (input.isNotEmpty()) {
+            if (!input.startsWith("http")) {
+                webView.loadUrl("https://$input")
+            } else {
+                webView.loadUrl(input)
+            }
+        }
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
         // 顶部导航栏
         Box(
@@ -122,8 +129,7 @@ fun CookieBrowserPage(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .align(Alignment.CenterVertically),
+                    .padding(horizontal = 16.dp),
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -149,22 +155,18 @@ fun CookieBrowserPage(
                             contentDescription = null,
                         )
                     }
-                    androidx.compose.material3.OutlinedTextField(
+                    OutlinedTextField(
                         value = url,
                         onValueChange = { url = it },
                         modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
                         label = { Text(stringResource(R.string.video_url)) },
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
                         onImeAction = {
-                            if (url.isNotEmpty()) {
-                                loadUrl(webView, url)
-                            }
+                            loadWebUrl(url)
                         },
                     )
                     IconButton(onClick = {
-                        if (url.isNotEmpty()) {
-                            loadUrl(webView, url)
-                        }
+                        loadWebUrl(url)
                     }) {
                         Icon(
                             imageVector = Icons.Filled.Add,
@@ -182,45 +184,39 @@ fun CookieBrowserPage(
         )
 
         // 底部状态栏
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
-                .padding(horizontal = 16.dp)
-                .align(Alignment.BottomCenter),
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Column(
-                modifier = Modifier.align(Alignment.CenterVertically),
-            ) {
-                if (isLoading) {
-                    Text(
-                        text = stringResource(R.string.loading),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                } else if (exportStatus.isNotEmpty()) {
-                    Text(
-                        text = exportStatus,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+            // 左侧：状态文本
+            if (isLoading) {
+                Text(
+                    text = stringResource(R.string.loading),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            } else if (exportStatus.isNotEmpty()) {
+                Text(
+                    text = exportStatus,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
-            Row(
-                modifier = Modifier.align(Alignment.End),
-                verticalAlignment = Alignment.CenterVertically,
+            // 右侧：按钮
+            Button(
+                onClick = {
+                    showExportDialog = true
+                },
             ) {
-                Button(
-                    onClick = {
-                        showExportDialog = true
-                    },
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Cookie,
-                        contentDescription = null,
-                    )
-                    Text(text = stringResource(R.string.export_cookies))
-                }
+                Icon(
+                    imageVector = Icons.Outlined.Cookie,
+                    contentDescription = null,
+                )
+                Text(text = stringResource(R.string.export_cookies))
             }
         }
     }
@@ -254,7 +250,7 @@ fun CookieBrowserPage(
                                 url = webView.url ?: "https://",
                                 content = cookiesContent,
                             )
-                            com.junkfood.seal.util.DatabaseUtil.insertCookieProfile(profile)
+                            DatabaseUtil.insertCookieProfile(profile)
                             exportStatus = "Cookies 已导出（${webView.url}）"
                             showExportDialog = false
                             onCookiesExported()
@@ -271,13 +267,5 @@ fun CookieBrowserPage(
                 )
             },
         )
-    }
-}
-
-private fun loadUrl(webView: WebView, url: String) {
-    if (!url.startsWith("http")) {
-        webView.loadUrl("https://$url")
-    } else {
-        webView.loadUrl(url)
     }
 }
