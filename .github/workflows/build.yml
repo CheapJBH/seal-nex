@@ -48,8 +48,8 @@ jobs:
 
       - name: Build Release APK with Gradle
         env:
-          GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx768m"
-        run: ./gradlew clean assembleRelease --no-build-cache --no-configuration-cache -PABI_FILTERS=arm64-v8a
+          GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx2048m -Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
+        run: ./gradlew clean assembleRelease --no-build-cache --no-configuration-cache -PABI_FILTERS=arm64-v8a --no-daemon
 
       - name: Upload APK to artifact
         uses: actions/upload-artifact@v4
