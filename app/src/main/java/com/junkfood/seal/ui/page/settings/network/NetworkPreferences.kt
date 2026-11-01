@@ -3,6 +3,7 @@ package com.junkfood.seal.ui.page.settings.network
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.Cookie
 import androidx.compose.material.icons.outlined.OfflineBolt
@@ -178,7 +179,7 @@ fun NetworkPreferences(navigateToCookieProfilePage: () -> Unit = {}, onNavigateB
                     PreferenceItem(
                         title = stringResource(R.string.cookie_browser),
                         description = stringResource(R.string.cookie_browser_desc),
-                        icon = Icons.Default.Add,
+                        icon = Add,
                         onClick = { showCookieBrowser = true },
                     )
                 }
