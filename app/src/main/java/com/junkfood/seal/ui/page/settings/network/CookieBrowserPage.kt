@@ -34,6 +34,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.AndroidView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardOptions
@@ -80,17 +81,17 @@ fun CookieBrowserPage(
             settings.databaseEnabled = true
             settings.cacheMode = android.webkit.WebSettings.LOAD_DEFAULT
             webViewClient = object : WebViewClient() {
-                override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
-                    super.onPageStarted(view, url, favicon)
+                override fun onPageStarted(view: WebView?, loadedUrl: String?, favicon: android.graphics.Bitmap?) {
+                    super.onPageStarted(view, loadedUrl, favicon)
                     isLoading = true
-                    this@CookieBrowserPage.url = url ?: ""
+                    url = loadedUrl ?: ""
                 }
 
-                override fun onPageFinished(view: WebView?, url: String?) {
-                    super.onPageFinished(view, url)
+                override fun onPageFinished(view: WebView?, loadedUrl: String?) {
+                    super.onPageFinished(view, loadedUrl)
                     isLoading = false
-                    canGoBack = this@CookieBrowserPage.webView.canGoBack()
-                    canGoForward = this@CookieBrowserPage.webView.canGoForward()
+                    canGoBack = webView.canGoBack()
+                    canGoForward = webView.canGoForward()
                 }
 
                 override fun onReceivedError(
@@ -161,8 +162,6 @@ fun CookieBrowserPage(
                         onValueChange = { url = it },
                         modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
                         label = { Text(stringResource(R.string.video_url)) },
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
-                        onImeAction = { loadWebUrl(url) },
                     )
                     IconButton(onClick = { loadWebUrl(url) }) {
                         Icon(
