@@ -10,6 +10,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Clean workspace
         run: rm -rf $GITHUB_WORKSPACE/*
@@ -55,7 +57,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: seal-release-apk
-          path: app/build/outputs/apk/release/app-release.apk
+          path: app/build/outputs/apk/release/*.apk
           retention-days: 7
 
       - name: Create GitHub Release
@@ -73,7 +75,7 @@ jobs:
             - 其他：Seal-Nex 品牌、README、图标 + 徽章
 
             下载 `app-release.apk` 安装即可。
-          artifacts: "app/build/outputs/apk/release/app-release.apk"
+          artifacts: "app/build/outputs/apk/release/*.apk"
           draft: false
           prerelease: false
           token: ${{ secrets.GITHUB_TOKEN }}
