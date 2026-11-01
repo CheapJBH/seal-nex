@@ -88,6 +88,10 @@ English
 
 - Execute custom yt-dlp commands with templates.
 
+- **Concurrent download**: Enter multiple links separated by commas or newlines to download several videos at the same time (up to 3 concurrent tasks).
+
+- **Cookie Browser**: Built-in browser to log in to video platforms (YouTube, B站, etc.) and export cookies for high-quality downloads that require authentication.
+
 - Manage in-app downloads and custom command templates.
 
 - Easy to use and user-friendly.

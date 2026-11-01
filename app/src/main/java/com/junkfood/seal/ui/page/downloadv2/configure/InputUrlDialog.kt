@@ -158,6 +158,13 @@ private fun InputUrlPageImpl(
             },
         )
 
+        Text(
+            text = stringResource(R.string.multi_url_hint),
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.padding(horizontal = 32.dp).padding(top = 4.dp),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
         LazyRow(
             modifier = Modifier.padding(top = 8.dp).fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -257,10 +264,12 @@ private fun InputUrlPageImpl(
                 icon = Icons.AutoMirrored.Outlined.ArrowForward,
                 text = stringResource(R.string.proceed),
             ) {
-                onActionPost(Action.ProceedWithURLs(listOf(url)))
+                val urlList = url.split(Regex("[,，\n\r]+")).map { it.trim() }.filter { it.isNotBlank() }
+                onActionPost(Action.ProceedWithURLs(urlList))
             }
         }
     }
+    // 提示：支持多个链接，用逗号或换行分隔可并发下载
     if (showPasteDialog) {
         URLSelectionDialog(
             urlListFromClipboard = urlListFromClipboard,

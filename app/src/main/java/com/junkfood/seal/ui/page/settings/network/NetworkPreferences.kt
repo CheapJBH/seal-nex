@@ -60,6 +60,7 @@ fun NetworkPreferences(navigateToCookieProfilePage: () -> Unit = {}, onNavigateB
     var proxy by PROXY.booleanState
     var isCookiesEnabled by COOKIES.booleanState
     var forceIpv4 by FORCE_IPV4.booleanState
+    var showCookieBrowser by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -173,9 +174,26 @@ fun NetworkPreferences(navigateToCookieProfilePage: () -> Unit = {}, onNavigateB
                         onClick = { navigateToCookieProfilePage() },
                     )
                 }
+                item {
+                    PreferenceItem(
+                        title = stringResource(R.string.cookie_browser),
+                        description = stringResource(R.string.cookie_browser_desc),
+                        icon = Icons.Outlined.Add,
+                        onClick = { showCookieBrowser = true },
+                    )
+                }
             }
         },
     )
+
+    if (showCookieBrowser) {
+        CookieBrowserPage(
+            onNavigateBack = { showCookieBrowser = false },
+            onCookiesExported = {
+                showCookieBrowser = false
+            },
+        )
+    }
 
     if (showConcurrentDownloadDialog) {
         ConcurrentDownloadDialog { showConcurrentDownloadDialog = false }

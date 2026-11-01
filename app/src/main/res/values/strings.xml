@@ -103,6 +103,7 @@
     <string name="channel_name">Download</string>
     <string name="channel_description">Notify of downloaded files and progress</string>
     <string name="video_url">Video link</string>
+    <string name="multi_url_hint">Support multiple links separated by commas or newlines for concurrent download</string>
     <string name="download_finish_notification">Download finished. Tap to open.</string>
     <string name="execute_command_notification">Running custom commands…</string>
     <string name="battery_settings_desc">"Please set battery usage of this app to \"Unrestricted\" in the system settings to download in the background."
@@ -185,6 +186,8 @@
     <string name="aria2_desc">Use aria2c as the external downloader</string>
     <string name="cookies">Cookies</string>
     <string name="cookies_desc">Use Netscape formatted cookies for downloads</string>
+    <string name="cookie_browser">Cookie Browser</string>
+    <string name="cookie_browser_desc">Built-in browser to log in and export cookies for high-quality downloads</string>
     <string name="cookies_file_name" translatable="false">cookies.txt</string>
     <string name="clear_temp_files">Clear temporary files</string>
     <string name="clear_temp_files_desc">Delete all temporary files from the temporary directory</string>
@@ -391,6 +394,10 @@
     <string name="update_subtitle_languages">Update subtitle languages?</string>
 
     <string name="export_backup">Export</string>
+    <string name="export_cookies">Export Cookies</string>
+    <string name="export_cookies_desc">Export cookies from the current page to a yt-dlp-compatible file for high-quality downloads</string>
+    <string name="loading">Loading…</string>
+    <string name="export">Export</string>
     <string name="import_backup">Import</string>
     <string name="full_backup">Full backup</string>
     <string name="backup_type">Backup type</string>
