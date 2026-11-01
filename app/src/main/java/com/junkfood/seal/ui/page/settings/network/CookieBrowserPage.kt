@@ -99,14 +99,14 @@ fun CookieBrowserPage(
                         Icon(
                             imageVector = Icons.Outlined.ArrowBack,
                             contentDescription = null,
-                            enabled = nativeWebView?.canGoBack != false,
+                            enabled = nativeWebView?.canGoBack() ?: false,
                         )
                     }
                     IconButton(onClick = { nativeWebView?.goForward() }) {
                         Icon(
                             imageVector = Icons.Outlined.ArrowForward,
                             contentDescription = null,
-                            enabled = nativeWebView?.canGoForward != false,
+                            enabled = nativeWebView?.canGoForward() ?: false,
                         )
                     }
                     IconButton(onClick = { nativeWebView?.reload() }) {
