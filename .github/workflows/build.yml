@@ -45,9 +45,29 @@ jobs:
       - name: Build Release APK with Gradle
         run: ./gradlew clean assembleRelease --no-build-cache
 
-      - name: Upload APK
+      - name: Upload APK to artifact
         uses: actions/upload-artifact@v4
         with:
           name: seal-release-apk
           path: app/build/outputs/apk/release/app-release.apk
           retention-days: 7
+
+      - name: Create GitHub Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: ncipollo/release-action@v1
+        with:
+          tag: "v${{ github.run_number }}"
+          name: "Seal-Nex v${{ github.run_number }}"
+          body: |
+            Seal-Nex Android 视频/音频下载器
+
+            ## 新增功能
+            - **并发多链接下载**：URL 输入框支持逗号/换行分隔多个链接，最高 3 个任务并发下载
+            - **内置 Cookie 浏览器**：设置 → 网络 → Cookie Browser，登录视频平台后导出 Cookies，解锁高清下载
+            - 其他：Seal-Nex 品牌、README、图标 + 徽章
+
+            下载 `app-release.apk` 安装即可。
+          artifacts: "app/build/outputs/apk/release/app-release.apk"
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
