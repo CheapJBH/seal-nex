@@ -1,7 +1,9 @@
 package com.junkfood.seal.ui.page.settings.network
 
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import com.google.accompanist.web.AccompanistWebChromeClient
+import com.google.accompanist.web.AccompanistWebViewClient
+import com.google.accompanist.web.WebView
+import com.google.accompanist.web.rememberWebViewState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.ArrowBack
@@ -26,7 +27,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,11 +34,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.AndroidView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardOptions
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.junkfood.seal.R
 import com.junkfood.seal.database.objects.CookieProfile
@@ -48,7 +45,6 @@ import com.junkfood.seal.util.COOKIES
 import com.junkfood.seal.util.DatabaseUtil
 import com.junkfood.seal.util.DownloadUtil
 import com.junkfood.seal.util.FileUtil
-import com.junkfood.seal.util.FileUtil.getCookiesFile
 import com.junkfood.seal.util.PreferenceUtil.updateBoolean
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -74,51 +70,38 @@ fun CookieBrowserPage(
     var exportStatus by remember { mutableStateOf("") }
     var showExportDialog by remember { mutableStateOf(false) }
 
-    val webView = remember {
-        WebView(context).apply {
-            settings.javaScriptEnabled = true
-            settings.domStorageEnabled = true
-            settings.databaseEnabled = true
-            settings.cacheMode = android.webkit.WebSettings.LOAD_DEFAULT
-            webViewClient = object : WebViewClient() {
-                override fun onPageStarted(view: WebView?, loadedUrl: String?, favicon: android.graphics.Bitmap?) {
-                    super.onPageStarted(view, loadedUrl, favicon)
-                    isLoading = true
-                    url = loadedUrl ?: ""
-                }
+    val webViewState = rememberWebViewState("https://www.youtube.com/")
 
-                override fun onPageFinished(view: WebView?, loadedUrl: String?) {
-                    super.onPageFinished(view, loadedUrl)
-                    isLoading = false
-                    canGoBack = webView.canGoBack()
-                    canGoForward = webView.canGoForward()
-                }
+    // 页面加载状态监听
+    val webViewClient = remember {
+        object : AccompanistWebViewClient() {
+            override fun onPageFinished(view: WebView, loadedUrl: String?) {
+                super.onPageFinished(view, loadedUrl)
+                isLoading = false
+                canGoBack = webViewState.canGoBack
+                canGoForward = webViewState.canGoForward
+                url = loadedUrl ?: ""
+            }
 
-                override fun onReceivedError(
-                    view: WebView?,
-                    errorCode: Int,
-                    description: String?,
-                    failingUrl: String?,
-                ) {
-                    super.onReceivedError(view, errorCode, description, failingUrl)
-                    isLoading = false
-                    exportStatus = "加载失败：$description"
-                }
+            override fun onReceivedError(
+                view: WebView,
+                errorCode: Int,
+                description: String?,
+                failingUrl: String?,
+            ) {
+                super.onReceivedError(view, errorCode, description, failingUrl)
+                isLoading = false
+                exportStatus = "加载失败：$description"
             }
         }
-    }
-
-    // 初次加载首页
-    LaunchedEffect(Unit) {
-        webView.loadUrl("https://www.youtube.com/")
     }
 
     fun loadWebUrl(input: String) {
         if (input.isNotEmpty()) {
             if (!input.startsWith("http")) {
-                webView.loadUrl("https://$input")
+                webViewState.loadUrl("https://$input")
             } else {
-                webView.loadUrl(input)
+                webViewState.loadUrl(input)
             }
         }
     }
@@ -137,21 +120,21 @@ fun CookieBrowserPage(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    IconButton(onClick = { webView.goBack(); canGoBack = webView.canGoBack() }) {
+                    IconButton(onClick = { webViewState.goBack(); canGoBack = webViewState.canGoBack }) {
                         Icon(
                             imageVector = Icons.Outlined.ArrowBack,
                             contentDescription = null,
                             enabled = canGoBack,
                         )
                     }
-                    IconButton(onClick = { webView.goForward(); canGoForward = webView.canGoForward() }) {
+                    IconButton(onClick = { webViewState.goForward(); canGoForward = webViewState.canGoForward }) {
                         Icon(
                             imageVector = Icons.Outlined.ArrowForward,
                             contentDescription = null,
                             enabled = canGoForward,
                         )
                     }
-                    IconButton(onClick = { webView.reload() }) {
+                    IconButton(onClick = { webViewState.reload() }) {
                         Icon(
                             imageVector = Icons.Outlined.Refresh,
                             contentDescription = null,
@@ -174,8 +157,10 @@ fun CookieBrowserPage(
         }
 
         // WebView 内容区域
-        androidx.compose.ui.platform.AndroidView(
-            factory = { webView },
+        WebView(
+            state = webViewState,
+            client = webViewClient,
+            chromeClient = object : AccompanistWebChromeClient() {},
             modifier = Modifier.fillMaxSize(),
         )
 
@@ -241,11 +226,11 @@ fun CookieBrowserPage(
                             // 保存为 CookieProfile
                             val profile = CookieProfile(
                                 id = 0,
-                                url = webView.url ?: "https://",
+                                url = webViewState.url?.toString() ?: "https://",
                                 content = cookiesContent,
                             )
                             DatabaseUtil.insertCookieProfile(profile)
-                            exportStatus = "Cookies 已导出（${webView.url}）"
+                            exportStatus = "Cookies 已导出（${webViewState.url}）"
                             showExportDialog = false
                             onCookiesExported()
                         } else {
