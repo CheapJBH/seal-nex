@@ -31,23 +31,6 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
 
-      - name: Generate release keystore
-        run: |
-          keytool -genkeypair -v \
-            -alias seal-release \
-            -keyalg RSA -keysize 2048 -validity 10000 \
-            -keystore /tmp/seal-release.keystore \
-            -storepass sealrelease \
-            -keypass sealrelease \
-            -dname "CN=Seal, O=Seal, C=US" \
-            -noprompt
-
-          cat > keystore.properties <<EOF
-          storeFile=/tmp/seal-release.keystore
-          storePassword=sealrelease
-          keyAlias=seal-release
-          keyPassword=sealrelease
-          EOF
 
       - name: Build Release APK with Gradle
         env:
