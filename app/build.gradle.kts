@@ -140,12 +140,14 @@ android {
     kotlinOptions { freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlin.RequiresOptIn" }
 
     packaging {
+        resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" }
+        jniLibs.useLegacyPackaging = true
+    }
+    androidResources { generateLocaleConfig = true }
 
-ktfmt { kotlinLangStyle() }
+    namespace = "com.junkfood.seal"
 
-kotlin { jvmToolchain(21) }
-
-dependencies {
+    dependencies {
     implementation(project(":color"))
 
     implementation(libs.bundles.core)
