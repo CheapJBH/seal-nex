@@ -45,7 +45,6 @@ jobs:
         with:
           name: seal-release-apk
           path: app/build/outputs/apk/generic/release/*.apk
-          if-no-files-found: error
           retention-days: 7
 
       - name: Create GitHub Release
