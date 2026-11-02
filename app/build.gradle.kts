@@ -71,7 +71,7 @@ android {
 
     androidComponents {
         onVariants { variant ->
-            if (!variant.buildType.isDebug) {
+            if (variant.buildType.name == "release") {
                 variant.signingConfig = signingConfigs.getByName("githubPublish")
             }
             variant.outputs.forEach { output ->
