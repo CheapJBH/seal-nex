@@ -28,16 +28,14 @@ val currentVersionCode = currentVersion.code.toInt()
 android {
     compileSdk = 35
 
-    if (keystorePropertiesFile.exists()) {
-        val keystoreProperties = Properties()
-        keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-        signingConfigs {
-            create("githubPublish") {
-                keyAlias = keystoreProperties["keyAlias"].toString()
-                keyPassword = keystoreProperties["keyPassword"].toString()
-                storeFile = rootProject.file(keystoreProperties["storeFile"]!!)
-                storePassword = keystoreProperties["storePassword"].toString()
-            }
+    val keystoreProperties = Properties()
+    keystoreProperties.load(FileInputStream(rootProject.file("keystore.properties")))
+    signingConfigs {
+        create("githubPublish") {
+            keyAlias = keystoreProperties.getProperty("keyAlias")!!
+            keyPassword = keystoreProperties.getProperty("keyPassword")!!
+            storeFile = rootProject.file(keystoreProperties.getProperty("storeFile")!!)
+            storePassword = keystoreProperties.getProperty("storePassword")!!
         }
     }
 
@@ -100,14 +98,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-            if (keystorePropertiesFile.exists()) {
-                signingConfig = signingConfigs.getByName("githubPublish")
-            }
+            signingConfig = signingConfigs.getByName("githubPublish")
         }
         debug {
-            if (keystorePropertiesFile.exists()) {
-                signingConfig = signingConfigs.getByName("githubPublish")
-            }
+            signingConfig = signingConfigs.getByName("githubPublish")
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
             resValue("string", "app_name", "Seal Debug")
@@ -146,23 +140,6 @@ android {
     kotlinOptions { freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlin.RequiresOptIn" }
 
     packaging {
-        resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" }
-        jniLibs.useLegacyPackaging = true
-    }
-    androidResources { generateLocaleConfig = true }
-
-    namespace = "com.junkfood.seal"
-
-    afterEvaluate {
-        val releaseSigningConfig = buildTypes.getByName("release").signingConfig
-        println("=== DEBUG SIGNING ===")
-        println("keystorePropertiesFile.exists() = $keystorePropertiesFile.exists()")
-        println("release.signingConfig = $releaseSigningConfig")
-        println("release.signingConfig.storeFile = ${releaseSigningConfig?.storeFile}")
-        println("release.signingConfig.storeFile.exists() = ${releaseSigningConfig?.storeFile?.exists()}")
-        println("=====================")
-    }
-}
 
 ktfmt { kotlinLangStyle() }
 
