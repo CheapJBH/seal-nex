@@ -137,15 +137,7 @@ android {
         }
     }
 
-    kotlinOptions {
-        jvmTarget = "21"
-        freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlin.RequiresOptIn"
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
+    kotlinOptions { freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlin.RequiresOptIn" }
 
     packaging {
         resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" }
