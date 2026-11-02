@@ -24,21 +24,13 @@ jobs:
       - name: Verify commit
         run: git rev-parse HEAD && git log --oneline -3
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
           cache: 'gradle'
 
-
-      - name: Debug keystore.properties
-        run: |
-          echo "=== keystore.properties exists: $(test -f keystore.properties && echo YES || echo NO) ==="
-          echo "=== keystore.properties content: ==="
-          cat keystore.properties 2>&1 || echo "FILE NOT FOUND"
-          echo "=== seal-release.keystore exists: $(test -f seal-release.keystore && echo YES || echo NO) ==="
-          ls -l seal-release.keystore 2>&1 || echo "KEYSTORE NOT FOUND"
 
       - name: Build Release APK with Gradle
         env:
