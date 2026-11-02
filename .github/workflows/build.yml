@@ -32,6 +32,14 @@ jobs:
           cache: 'gradle'
 
 
+      - name: Debug keystore.properties
+        run: |
+          echo "=== keystore.properties exists: $(test -f keystore.properties && echo YES || echo NO) ==="
+          echo "=== keystore.properties content: ==="
+          cat keystore.properties 2>&1 || echo "FILE NOT FOUND"
+          echo "=== seal-release.keystore exists: $(test -f seal-release.keystore && echo YES || echo NO) ==="
+          ls -l seal-release.keystore 2>&1 || echo "KEYSTORE NOT FOUND"
+
       - name: Build Release APK with Gradle
         env:
           GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx2048m -Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
