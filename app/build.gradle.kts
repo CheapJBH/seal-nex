@@ -152,6 +152,16 @@ android {
     androidResources { generateLocaleConfig = true }
 
     namespace = "com.junkfood.seal"
+
+    afterEvaluate {
+        val releaseSigningConfig = buildTypes.getByName("release").signingConfig
+        println("=== DEBUG SIGNING ===")
+        println("keystorePropertiesFile.exists() = $keystorePropertiesFile.exists()")
+        println("release.signingConfig = $releaseSigningConfig")
+        println("release.signingConfig.storeFile = ${releaseSigningConfig?.storeFile}")
+        println("release.signingConfig.storeFile.exists() = ${releaseSigningConfig?.storeFile?.exists()}")
+        println("=====================")
+    }
 }
 
 ktfmt { kotlinLangStyle() }
