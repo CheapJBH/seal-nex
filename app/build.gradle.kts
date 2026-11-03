@@ -75,7 +75,7 @@ android {
                 variant.signingConfig = signingConfigs.getByName("githubPublish")
             }
             variant.outputs.forEach { output ->
-                val name =
+                val abiName =
                     if (splitApks) {
                         output.filters
                             .find { it.filterType == FilterConfiguration.FilterType.ABI }
@@ -84,7 +84,7 @@ android {
                         abiFilterList.firstOrNull()
                     }
 
-                val baseAbiCode = abiCodes[name]
+                val baseAbiCode = abiCodes[abiName]
 
                 if (baseAbiCode != null) {
                     output.versionCode.set(baseAbiCode + (output.versionCode.get() ?: 0))
