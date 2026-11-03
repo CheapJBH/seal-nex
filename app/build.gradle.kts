@@ -71,9 +71,6 @@ android {
 
     androidComponents {
         onVariants { variant ->
-            if (variant.name.contains("Release")) {
-                variant.signingConfig = signingConfigs.getByName("githubPublish")
-            }
             variant.outputs.forEach { output ->
                 val abiName =
                     if (splitApks) {
